@@ -14,15 +14,22 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const ERCTokens = await hre.ethers.getContractFactory("SubaruERCE20");
-  const ercTokens = await ERCTokens.deploy();
+  const ERC20Token = await hre.ethers.getContractFactory("SubaruERC20");
+  const ERC721Token = await hre.ethers.getContractFactory("SubaruERC721");
+  const fungible = await ERC20Token.deploy();
+  const nonFungible = await ERC721Token.deploy();
 
-  await ercTokens.deployed();
+  await fungible.deployed();
+  await nonFungible.deployed();
 
-  console.log("ercTokens deployed to:", ercTokens.address);
+  console.log("fungible Tokens deployed to: ", fungible.address);
+  console.log("Non-fungible Tokens deployed to: ", nonFungible.address);
 
-  const txn = await ercTokens.buyToken(200);
-  await txn.wait;
+  const buyTxn = await fungible.buy();
+  await buyTxn.wait;
+
+  const mintTxn = await nonFungible.safeMint();
+  await mintTxn.wait;
 }
 
 // We recommend this pattern to be able to use async/await everywhere

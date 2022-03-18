@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol"; //import the console logging function
@@ -21,6 +20,7 @@ contract SubaruERC20 is ERC20, Ownable {
 
 
     event Bought(address _buyer, uint _amountOfETH, uint _amountOfToken);
+    event Sold(address _seller, uint _amountOfToken,  uint _amountOfETH);
     
     constructor() ERC20("Subaru", "SBU") {
         _mint(msgSender, _supply * 10 ** decimals());        // Initializes a total capped supply of 1,000,000 tokens on deployment
@@ -67,7 +67,7 @@ contract SubaruERC20 is ERC20, Ownable {
         uint256 allowance = allowance(msgSender, address(this));        // the amount of tokens the contract is allowed to have access to on behalf of the owner
 
 
-        uint256 spenderBalance = address(this).balance;        // The balance of the contract (or the vendor)
+        uint256 spenderBalance = address(this).balance;        // The eth (not token) balance of the contract (or the vendor)
 
 
         require(allowance >= _amount, "Increase the token allowance");
@@ -80,28 +80,8 @@ contract SubaruERC20 is ERC20, Ownable {
 
         (sent,) = msgSender.call{value: transferAmountEth}("");
         require(sent, "failed to send ETH to the user");
+
+        emit Sold(msgSender, _amount, transferAmountEth);
     }
 }
 
-contract SubaruERC721 is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-
-    Counters.Counter private _tokenIdCounter;
-
-     event NewEpicNFTMinted(address sender, uint256 tokenId);
-
-    constructor() ERC721("Subaru", "SBU") {}
-
-    function safeMint() public onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current(); // Get current token ID
-        string memory tokenName;
-        string memory tokenImageLink;
-         string memory tokenURI = string(abi.encodePacked("{'name': ", tokenName, ", 'description': 'A collection of super rare Subaru boys.' , 'image': ", tokenImageLink, "}"));
-    
-        _tokenIdCounter.increment(); // Increment token ID
-        _safeMint(msg.sender, tokenId); // mint item with current token ID to caller of the function
-        _setTokenURI(tokenId, tokenURI); // Set Metadata for item with token ID
-
-        emit NewEpicNFTMinted(msg.sender, tokenId);
-    }
-}

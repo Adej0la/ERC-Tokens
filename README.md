@@ -1,15 +1,28 @@
-# Basic Sample Hardhat Project
+# About
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+Simple ERC20 and ERC721 Token Contracts
 
-Try running some of the following tasks:
+- The ERC20 Contract will allow you to buy (and sell) Subaru tokens.
+- The ERC721 Contract will allow you to mint Non-Fungible tokens.
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+## IPFS Image Links
+
+- https://ipfs.io/ipfs/QmPLUFGapx7QCMLKcBXSjmRj9nv1DVMbaqhCoqosmuNENP
+- https://ipfs.io/ipfs/QmNzxMLKjP25ReUaJvQxh3E2C4VZS17xBmaomTRT9zQJMx
+
+## Metadata Structure
+
+    {
+                name : // Any name
+
+               image : // URL to image on IPFS,
+
+               description: // Some text
+
+     }
+
+## Etherscan Links
+
+- ERC721 Token : https://rinkeby.etherscan.io/address/0x56ec37F53163582C09fE5AA64162767d4351f5f9#code
+
+- ERC20 Token : https://rinkeby.etherscan.io/address/0x612382701D679BFEd4a9B51828A3E8ecc542F39D#code
