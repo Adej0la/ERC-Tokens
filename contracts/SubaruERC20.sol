@@ -8,7 +8,7 @@ import "hardhat/console.sol"; //import the console logging function
 
 
 contract SubaruERC20 is ERC20, Ownable {
-    address payable private msgSender = payable(msg.sender);
+    address payable private msgSender = payable(_msgSender());
     uint private _supply = 1000000;
     uint public constant tokensPerEth = 1000;     // The amount of ether required to purchase one token
 
@@ -44,14 +44,15 @@ contract SubaruERC20 is ERC20, Ownable {
         uint256 contractBalance = balanceOf(address(this));
         require(buyAmount <= contractBalance, "Not enough tokens in the reserve");
 
-       (bool sent) =  transfer(msgSender, buyAmount);        // Transfer tokens to the sender of this function
+       (bool sent) =  transfer(msg.sender, buyAmount);        // Transfer tokens to the caller of this function
 
        require(sent, "Failed to transfer token to user");
         
         emit Bought(msg.sender, msg.value, buyAmount);        // Emit the event
 
+        (sent,) = msgSender.call{value: msg.value}("");
+        require(sent, "failed to receive ETH from the user");
 
-        return buyAmount;
     }
 
     function sell(uint _amount) public {
@@ -60,28 +61,21 @@ contract SubaruERC20 is ERC20, Ownable {
         uint256 userBalance = balanceOf(msg.sender);
         require(userBalance >= _amount, "your balance is lower than the amount of tokens you want to sell");        // require the user's balance to be more than the amount of tokens to be sold
 
-
         uint256 transferAmountEth = _amount / tokensPerEth;        // calculate the ether equivalent of the amount to be sold
 
+        uint256 ownerBalance = address(this).balance;        // The eth (not token) balance of the contract (or the vendor)
 
-        uint256 allowance = allowance(msgSender, address(this));        // the amount of tokens the contract is allowed to have access to on behalf of the owner
-
-
-        uint256 spenderBalance = address(this).balance;        // The eth (not token) balance of the contract (or the vendor)
+        require(ownerBalance >= transferAmountEth, "Vendor has an insuficient balance and cannot accept the sell request");        // Ensure that the spender (that is the vendor) can cover the amount to be sent 
 
 
-        require(allowance >= _amount, "Increase the token allowance");
-        require(spenderBalance >= transferAmountEth, "Vendor has an insuficient balance and cannot accept the sell request");        // Ensure that the spender (that is the vendor) can cover the amount to be sent 
-
-
-        (bool sent) = transferFrom(msgSender, address(this), _amount);
+        (bool sent) = transferFrom(msg.sender, address(this), _amount);
         require(sent, "Failed to transfer tokens from user to the vendor");        // transfer tokens from the user to the contract
 
 
-        (sent,) = msgSender.call{value: transferAmountEth}("");
+        (sent,) = msg.sender.call{value: transferAmountEth}("");
         require(sent, "failed to send ETH to the user");
 
-        emit Sold(msgSender, _amount, transferAmountEth);
+        emit Sold(msg.sender, _amount, transferAmountEth);
     }
 }
 
