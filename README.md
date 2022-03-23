@@ -25,4 +25,4 @@ Simple ERC20 and ERC721 Token Contracts
 
 - ERC721 Token : https://rinkeby.etherscan.io/address/0x56ec37F53163582C09fE5AA64162767d4351f5f9#code
 
-- ERC20 Token : https://rinkeby.etherscan.io/address/0x612382701D679BFEd4a9B51828A3E8ecc542F39D#code
+- ERC20 Token : https://rinkeby.etherscan.io/address/0xd970271d5fFE048Fb919d4f84f7A98fa05DC4A37#code
